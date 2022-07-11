@@ -114,5 +114,32 @@ describe( "Products Tests", () => {
     } )
   } )
 
+  describe( 'DELETE /api/products/:productoId', () => {
+    let productToDelete
+    let response
+    beforeEach( async () => {
+      productToDelete = await Producto.create( {
+        name: "teclado",
+        description: "Para programar las cosicas",
+        department: "informatica",
+        stock: "122",
+        available: true,
+        price: 200,
+      } )
+      response = await request( app ).delete( `/api/products/${ productToDelete._id }` ).send()
+    } )
+    afterEach( async () => {
+      await Producto.findByIdAndDelete( productToDelete._id )
+    } )
+    it( 'deberia devolver un status 200', () => {
+      expect( response.statusCode ).toBe( 200 )
+      expect( response.headers[ 'content-type' ] ).toContain( 'json' )
+    } )
+    it( 'el id del producto no deberia de estar en la base de datos', async () => {
+      const product = await Producto.findById( productToDelete._id )
+      expect( product ).toBeNull()
+    } )
+  } )
+
 
 } )
